@@ -83,11 +83,17 @@ function LanguageToggle() {
 export default function Navbar({ activeTab, onTabChange, onToggleTheme, theme, onApply, onJoin }) {
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
-  const [mobile,   setMobile]   = useState(window.innerWidth <= 768);
+  const [mobile, setMobile] = useState(window.innerWidth <= 768);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const s = () => setScrolled(window.scrollY > 20);
-    const r = () => setMobile(window.innerWidth <= 768);
+    const r = () => {
+      const isMobile = window.innerWidth <= 768;
+      setMobile(isMobile);
+      if (!isMobile) setMenuOpen(false);
+    };
+
     window.addEventListener('scroll', s, { passive: true });
     window.addEventListener('resize', r, { passive: true });
     return () => {
@@ -96,31 +102,84 @@ export default function Navbar({ activeTab, onTabChange, onToggleTheme, theme, o
     };
   }, []);
 
-  const handleTab = tab => onTabChange(tab);
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
+  const handleTab = tab => {
+    onTabChange(tab);
+    setMenuOpen(false);
+  };
+
+  const closeMenu = () => setMenuOpen(false);
+  const toggleMenu = () => setMenuOpen(prev => !prev);
 
   if (mobile) return (
     <nav className="ns-navbar-mobile">
       <div className="ns-mobile-top">
-        <img src={BRAND_LOGO_ICON} alt="NexaSphere" className="ns-mobile-logo-ns"/>
-        <span className="ns-mobile-brand"><span>NexaSphere</span></span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="ns-mobile-logo-group">
+          <img src={BRAND_LOGO_ICON} alt="NexaSphere" className="ns-mobile-logo-ns"/>
+          <span className="ns-mobile-brand"><span>NexaSphere</span></span>
+        </div>
+
+        <div className="ns-mobile-top-actions">
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <button
+            className="ns-mobile-menu-toggle"
+            onClick={toggleMenu}
+            aria-label={menuOpen ? t('nav.close_menu', 'Close menu') : t('nav.open_menu', 'Open menu')}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="7" x2="21" y2="7" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="17" x2="21" y2="17" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
-      <div className="ns-mobile-tabs">
-        {TABS.map(tName => (
-          <button
-            key={tName}
-            className={`ns-mobile-tab${activeTab === tName ? ' active' : ''}${tName === 'Contact' ? ' contact-tab' : ''}`}
-            onClick={() => handleTab(tName)}
-          >
-            {t(`nav.${tName.toLowerCase()}`)}
+
+      <div className={`ns-mobile-drawer${menuOpen ? ' open' : ''}`} role="dialog" aria-modal="true" aria-label={t('nav.menu', 'Navigation menu')}>
+        <div className="ns-mobile-drawer-header">
+          <span>{t('nav.menu', 'Menu')}</span>
+          <button className="ns-mobile-drawer-close" onClick={closeMenu} aria-label={t('nav.close_menu', 'Close menu')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
-        ))}
-        <button className="ns-mobile-tab ns-mobile-cta" onClick={onJoin} aria-label={t('nav.join_tooltip')}>{t('nav.join')}</button>
-        <button className="ns-mobile-tab ns-mobile-cta ns-mobile-cta-apply" onClick={onApply} aria-label={t('nav.apply_tooltip')}>{t('nav.apply')}</button>
+        </div>
+
+        <div className="ns-mobile-drawer-links">
+          {TABS.map(tName => (
+            <button
+              key={tName}
+              className={`ns-mobile-drawer-link${activeTab === tName ? ' active' : ''}`}
+              onClick={() => handleTab(tName)}
+            >
+              {t(`nav.${tName.toLowerCase()}`)}
+            </button>
+          ))}
+        </div>
+
+        <div className="ns-mobile-drawer-actions">
+          <button className="ns-mobile-tab ns-mobile-cta" onClick={() => { onJoin(); closeMenu(); }} aria-label={t('nav.join_tooltip')}>{t('nav.join')}</button>
+          <button className="ns-mobile-tab ns-mobile-cta ns-mobile-cta-apply" onClick={() => { onApply(); closeMenu(); }} aria-label={t('nav.apply_tooltip')}>{t('nav.apply')}</button>
+        </div>
       </div>
+
+      {menuOpen && <div className="ns-mobile-backdrop" onClick={closeMenu} />}
     </nav>
   );
 
