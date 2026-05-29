@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Globe } from 'lucide-react';
 import { BRAND_LOGO_FULL, BRAND_LOGO_ICON } from './brandAssets';
 
 const TABS = ['Home', 'Activities', 'Events', 'About', 'Team', 'Contact', 'Dashboard', 'Gamification'];
@@ -74,7 +75,7 @@ function LanguageToggle() {
         e.currentTarget.style.color = 'var(--t2)';
       }}
     >
-      <span>🌐</span>
+      <Globe size={14} aria-hidden="true" />
       <span>{currentLang.toUpperCase()}</span>
     </button>
   );

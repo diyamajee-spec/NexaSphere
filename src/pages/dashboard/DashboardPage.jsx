@@ -126,7 +126,7 @@ export default function DashboardPage({ onBack }) {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
               <div>
-                <h3 style={{ color: '#FFFFFF', marginBottom: '8px' }}>🏆 Your Progress</h3>
+                <h3 style={{ color: '#FFFFFF', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: 8 }}><DynamicIcon name="Trophy" size={20} /> Your Progress</h3>
                 <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '8px' }}>
                   <div>
                     <p style={{ color: '#6B7280', fontSize: '12px' }}>Level {gamificationStats.level}</p>

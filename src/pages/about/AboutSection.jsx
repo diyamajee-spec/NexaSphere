@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MessageCircle, ExternalLink, Mail } from 'lucide-react';
 
 const WHATSAPP       = 'https://chat.whatsapp.com/Jjc5cuUKENu0RC1vWSEs20';
 const LINKEDIN       = 'https://www.linkedin.com/showcase/glbajaj-nexasphere/';
@@ -102,9 +103,9 @@ export default function AboutSection() {
         </div>
 
         <div className="about-actions pop-in" style={{animationDelay:'.28s'}}>
-          <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">💬 {t('about.actions.join_whatsapp')}</a>
-          <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="btn btn-linkedin">🔗 {t('about.actions.linkedin')}</a>
-          <a href={`mailto:${NEXASPHERE_EMAIL}`} className="btn btn-outline">📧 {t('about.actions.email_us')}</a>
+          <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp"><MessageCircle size={16} aria-hidden="true" /> {t('about.actions.join_whatsapp')}</a>
+          <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="btn btn-linkedin"><ExternalLink size={16} aria-hidden="true" /> {t('about.actions.linkedin')}</a>
+          <a href={`mailto:${NEXASPHERE_EMAIL}`} className="btn btn-outline"><Mail size={16} aria-hidden="true" /> {t('about.actions.email_us')}</a>
         </div>
       </div>
     </section>

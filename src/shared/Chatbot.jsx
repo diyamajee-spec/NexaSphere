@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { MessageCircle, X, Send } from 'lucide-react';
 import '../styles/chatbot.css';
 
 const Chatbot = () => {
@@ -52,9 +53,9 @@ const Chatbot = () => {
   return (
     <div className="ns-chatbot-wrapper">
       {!isOpen ? (
-        <button className="chat-trigger-btn" onClick={() => setIsOpen(true)}>
+        <button className="chat-trigger-btn" onClick={() => setIsOpen(true)} aria-label="Open chat">
           <div className="pulse-ring"></div>
-          💬
+          <MessageCircle size={24} aria-hidden="true" />
         </button>
       ) : (
         <div className="chat-window-glass">
@@ -63,7 +64,7 @@ const Chatbot = () => {
               <span className="status-dot"></span>
               <span>NEXA-AI</span>
             </div>
-            <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
+            <button className="close-btn" onClick={() => setIsOpen(false)} aria-label="Close chat"><X size={18} aria-hidden="true" /></button>
           </div>
           
           <div className="chat-messages" ref={scrollRef}>
@@ -81,7 +82,7 @@ const Chatbot = () => {
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Query system..."
             />
-            <button onClick={handleSend} className="send-btn">🚀</button>
+            <button onClick={handleSend} className="send-btn" aria-label="Send message"><Send size={18} aria-hidden="true" /></button>
           </div>
         </div>
       )}
