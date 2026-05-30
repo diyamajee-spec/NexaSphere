@@ -1,10 +1,12 @@
 import logging
 import os
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 
 from middleware.rate_limit import create_rate_limiter
 
@@ -49,6 +51,27 @@ else:
 
 app = FastAPI(title="NexaSphere AI Core")
 
+# --- Global Custom Validation Exception Interceptor ---
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors_dict = {}
+    for error in exc.errors():
+        field_name = error["loc"][-1] if error["loc"] else "unknown"
+        errors_dict[field_name] = error["msg"]
+
+    payload = {
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "status": status.HTTP_422_UNPROCESSABLE_ENTITY,
+        "error": "Unprocessable Entity",
+        "message": "Input validation failed.",
+        "details": errors_dict
+    }
+    
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=payload
+    )
+
 forms_rate_limiter = create_rate_limiter(
     window_ms=int(os.getenv("FORMS_RATE_LIMIT_WINDOW_MS", "600000")),
     max_requests=int(os.getenv("FORMS_RATE_LIMIT_MAX", "30")),
@@ -80,6 +103,7 @@ except ModuleNotFoundError as exc:
 app.include_router(forms.router)
 if recommend:
     app.include_router(recommend.router)
+
 # 3. CORS Configuration
 origins = os.getenv("CORS_ORIGIN", "http://localhost:5173,http://localhost:5174,https://nexasphere-glbajaj.vercel.app,https://admin-nexasphere.vercel.app,https://nexa-sphere-sigma.vercel.app,https://admin-dashboard-navy-pi-22.vercel.app").split(",")
 

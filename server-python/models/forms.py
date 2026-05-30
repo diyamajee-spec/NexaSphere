@@ -24,14 +24,14 @@ class FormSubmission(BaseModel):
     @classmethod
     def email_must_be_valid(cls, v):
         if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", v):
-            raise ValueError("Email must be a valid email address")
+            raise ValueError("Please enter a valid institutional email address.")
         return v
 
     @field_validator("whatsapp")
     @classmethod
     def whatsapp_must_be_valid(cls, v):
         if not re.fullmatch(r"[6-9]\d{9}", v):
-            raise ValueError("WhatsApp must be a valid 10-digit Indian mobile number starting with 6-9")
+            raise ValueError("WhatsApp number must be exactly 10 digits.")
         return v
 
     @field_validator("year")
